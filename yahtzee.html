@@ -1,0 +1,535 @@
+<html>
+<head>
+  <title>YACHT-Z</title>
+ 
+  <style media="screen" type="text/css">
+  .container 
+  {
+    background-color: #444466;
+    padding: 15px;
+    float: left;
+    width: auto;
+  }
+  
+  .controlgroup-title
+  {
+    font-family: Arial;
+    font-weight: 600;
+    font-size: 16px;
+    padding: 7px;
+    margin: 0px;
+    background-color: #779;
+    color: #222;
+    width: auto;
+    margin-top: 20px;
+  }
+
+  .control-label
+  {
+    font-family: Arial;
+    font-weight: 600;
+    font-size: 14px;
+
+    margin-bottom: 100px;
+  }
+
+  #controlgroup
+  {
+    font-family: Arial;
+    font-weight: 400;
+    font-size: 12px;
+    padding: 7px;
+    margin: 0px;
+    background-color: #779;
+    color: #222;
+    width: auto;
+  }
+
+  #controls
+  {
+    float: left;
+    background-color: transparent;
+    width: 300px;
+    padding: 10px;
+    margin-right: 10px;
+  }
+
+  #container
+  {
+    float: right;
+  }
+
+  #histogram
+  {
+    background-color: #000;
+    margin-bottom: 18px;
+  }
+
+  #pixels
+  {
+    float: left;
+  }
+  
+  #paper
+  {
+    float: left;
+
+  }
+
+  #downloaddxf
+  {
+    font-size: 14pt;
+    color: #bdb;
+  }
+  
+  body {
+  font: 14px/20px 'Helvetica Neue Light', HelveticaNeue-Light, 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  xxxmax-width: 820px;
+  margin: 0 auto;
+  padding: 10px;
+  color: #6e6;
+}
+
+pre, code, textarea {
+  font: 12px/20px Monaco, monospace;
+  border: 1px solid #CCC;
+  border-radius: 3px;
+  background: #F9F9F9;
+  padding: 0 3px;
+  color: #555;
+}
+pre, textarea {
+  padding: 10px;
+  width: 100%;
+}
+textarea {
+  height: 200px;
+}
+textarea:focus {
+  outline: none;
+}
+
+canvas { cursor: move; }
+
+.die {
+  float: left;
+  background-color: #cc8;
+  margin: 10px;
+  border-width: 5px;
+  padding: 5px;
+  width: 100px;
+  height: 60px;
+  color: #000;
+  font-size: 50px;
+  text-align: center;
+  padding-top: 40px;
+}
+
+.smalldie {
+  float: left;
+  background-color: #cc8;
+  margin: 4px;
+  border-width: 2px;
+  padding: 3px;
+  width: 40;
+  height: 28px;
+  color: #000;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  padding-top: 12px;
+}
+
+.held {
+  background-color: #a33;
+}
+
+.stat {
+  font-size: 20px;
+  padding-right: 10px;
+}
+.score {
+  font-size: 24px;
+  padding-top: 13px;
+}
+
+.header {
+  float: left;
+  width: 75px;
+  background-color: #555;
+  padding: 5px;
+  margin-left: 5px;
+}
+</style>
+</head>
+
+<body bgcolor="#334" onload="onload()">
+  <h1>YACHT-Z</h1>
+  
+ <!-- Seed: <input type="text" name="seed"><button onclick="simulate()">Simulation</button> -->
+ <button onclick="seed(roll())">Seed</button>
+ <div>
+  <div id="die1" class="die" onclick="dieClick(0, event)">1</div>
+  <div id="die2" class="die" onclick="dieClick(1, event)">hello</div>
+  <div id="die3" class="die" onclick="dieClick(2, event)">?</div>
+  <div id="die4" class="die" onclick="dieClick(3, event)">?</div>
+  <div id="die5" class="die" onclick="dieClick(4, event)">?</div>
+ </div>
+
+<div style="height:130px">&nbsp;</div>
+ <div><button onclick="simulate()">Simulate</button><button onclick="sortbyscore()">Score</button><button onclick="sortbyls()">Large Straight</button><button onclick="sortbyss()">Small Straight</button><button onclick="sortbyfh()">Full House</button></div>
+
+
+<div style="clear: both">
+  <div style="background-color: #666; padding: 5px; float:left; width: 272px">DICE</div>
+  <div class="header">SCORE</div>
+  <div class="header">YAHTZEE</div>
+  <div class="header">LG STRT</div>
+  <div class="header">SM STRT</div>
+  <div class="header">F HOUSE</div>
+  <div class="header">4oK</div>
+  <div class="header">3oK</div>
+</div>
+ <div id="simulationresults">
+ <div style="clear: both">
+  <div id="die1" class="smalldie" onclick="dieClick(0, event)">1</div>
+  <div id="die2" class="smalldie" onclick="dieClick(1, event)">2</div>
+  <div id="die3" class="smalldie" onclick="dieClick(2, event)">3</div>
+  <div id="die4" class="smalldie" onclick="dieClick(3, event)">4</div>
+  <div id="die5" class="smalldie" onclick="dieClick(4, event)">5</div>
+  <div class="score">1234 YZ:10 LS:9 SS:8 FH:7 4oK:23 3oK:912</div>
+</div>
+
+
+
+<div class="stat"><span>Yahtzee:</span><span id="stat-yahtzee">1234</span></div>
+<div class="stat"><span>Large Straight:</span><span id="stat-largestraight">1234</span></div>
+<div class="stat"><span>Small Straight:</span><span id="stat-smallstraight">1234</span></div>
+<div class="stat"><span>Full House:</span><span id="stat-fullhouse">1234</span></div>
+<div class="stat"><span>4 of a Kind:</span><span id="stat-fourok">1234</span></div>
+<div class="stat"><span>3 of a Kind:</span><span id="stat-threeok">1234</span></div>
+<div class="stat"><span>SCORE:</span><span id="stat-score">1234</span></div>
+
+<script type="text/javascript">
+
+var dieElements = [];
+
+function onload()
+{
+  dieElements[0] = document.getElementById("die1");
+  dieElements[1] = document.getElementById("die2");
+  dieElements[2] = document.getElementById("die3");
+  dieElements[3] = document.getElementById("die4");
+  dieElements[4] = document.getElementById("die5");
+  seed(roll());
+}
+
+
+var diceSeed;
+function seed(dice)
+{
+  diceSeed = dice;
+  for (i=0; i<5; i++)
+  {
+    dieElements[i].innerText = dice[i]['die'].toString();
+    dieElements[i].classList.remove('held');
+  }
+}
+
+function dieClick(index, event)
+{
+  if (event.offsetY < 10)
+  {
+    diceSeed[index]['die']--;
+    if (diceSeed[index]['die'] < 1)
+    {
+      diceSeed[index]['die'] = 6;
+    }
+    dieElements[index].innerText = diceSeed[index]['die'].toString();
+  }
+  else if (event.offsetY > 90)
+  {
+    diceSeed[index]['die']++;
+    if (diceSeed[index]['die'] > 6)
+    {
+      diceSeed[index]['die'] = 1;
+    }
+    dieElements[index].innerText = diceSeed[index]['die'].toString();
+  }
+  else
+  {
+    diceSeed[index]['hold'] = !diceSeed[index]['hold'];
+    if (diceSeed[index]['hold'])
+    {
+      dieElements[index].classList.add('held');
+    }
+    else
+    {
+      dieElements[index].classList.remove('held');
+    }
+  }
+}
+
+function roll()
+{
+  var rolly = [];
+
+  for (i=0; i<5; i++)
+  {
+    var die = Math.floor( Math.random() * 6 + 1);
+    rolly = rolly.concat( { 'die': die, 'hold': false });
+  }
+
+  return rolly;
+}
+
+function reroll(dice)
+{
+  newRoll = dice.map(a => Object.assign({}, a));
+  for (i=0; i<5; i++)
+  {
+    if (newRoll[i]['hold'] == false)
+    {
+      var die = Math.floor( Math.random() * 6 + 1);
+      newRoll[i] = { 'die': die, 'hold': false };
+    }
+  }
+
+  return newRoll;
+}
+
+function inittally()
+{
+  var tally = {
+    "threeok": 0,
+    "fourok": 0,
+    "fullhouse": 0,
+    "smallstraight": 0,
+    "largestraight": 0,
+    "yahtzee": 0,
+    "score": 0
+  };
+
+  return tally;
+}
+
+function isOne(val)
+{
+  return val > 0;
+}
+
+function tallyRoll(tally, dice)
+{
+  var histogram = [0,0,0,0,0,0];
+  var scored = false;
+  var sumofdice = 0;
+  for (i=0; i<5; i++)
+  {
+    histogram[dice[i]['die']-1]++;
+    sumofdice = sumofdice + dice[i]['die'];
+  }
+
+  if (histogram.includes(5))
+  {
+    tally["score"] = tally["score"] + 50;
+    scored = true;
+    tally["yahtzee"]++;
+    tally["fourok"]++;
+    tally["threeok"]++;
+  }
+  if (histogram.includes(4))
+  {
+    tally["score"] = tally["score"] + sumofdice;
+    scored = true;
+    tally["fourok"]++;
+    tally["threeok"]++;
+  }
+  if (histogram.includes(3) && histogram.includes(2))
+  {
+    if (!scored)
+    {
+      tally["score"] = tally["score"] + 25;
+      scored = true;
+    }
+    tally["fullhouse"]++;
+  }
+  if (histogram.includes(3))
+  {
+    tally["score"] = tally["score"] + sumofdice;
+    scored = true;
+    tally["threeok"]++;
+  }
+
+  if (histogram.slice(0, 5).every(isOne) || histogram.slice(1).every(isOne))
+  {
+    if (!scored)
+    {
+      tally["score"] = tally["score"] + 40;
+      scored = true;
+    }
+    tally["largestraight"]++;
+  }
+
+  if (histogram.slice(0, 4).every(isOne) || histogram.slice(1,5).every(isOne) || histogram.slice(2).every(isOne))
+  {
+    if (!scored)
+    {
+      tally["score"] = tally["score"] + 30;
+      scored = true;
+    }
+    tally["smallstraight"]++;
+  }
+}
+
+var iterations = 9000;
+var simulations = [];
+function simulate()
+{
+  simulations = [];
+  for (var i=0; i<32; i++)
+  {
+    var sim = simulateOneCase(i);
+    simulations = simulations.concat(sim);
+  }
+
+  sortbyscore();
+}
+
+function sortbyscore()
+{
+  // Sort by score
+  simulations.sort(function(a,b) { return b["score"] - a["score"]});
+  for (i=0; i<32; i++)
+  {
+    console.log("CASE " + simulations[i]['case'].toString() + ": " + simulations[i]['score']);
+  }
+
+  displayresults();
+}
+
+function sortbyls()
+{
+  // Sort by score
+  simulations.sort(function(a,b) { return b["tally"]["largestraight"] - a["tally"]["largestraight"]});
+  for (i=0; i<32; i++)
+  {
+    console.log("CASE " + simulations[i]['case'].toString() + ": " + simulations[i]['score']);
+  }
+
+  displayresults();
+}
+
+function sortbyss()
+{
+  // Sort by score
+  simulations.sort(function(a,b) { return b["tally"]["smallstraight"] - a["tally"]["smallstraight"]});
+  for (i=0; i<32; i++)
+  {
+    console.log("CASE " + simulations[i]['case'].toString() + ": " + simulations[i]['score']);
+  }
+
+  displayresults();
+}
+function sortbyfh()
+{
+  // Sort by score
+  simulations.sort(function(a,b) { return b["tally"]["fullhouse"] - a["tally"]["fullhouse"]});
+  for (i=0; i<32; i++)
+  {
+    console.log("CASE " + simulations[i]['case'].toString() + ": " + simulations[i]['score']);
+  }
+
+  displayresults();
+}
+
+function displayresults()
+{
+  // Display in browser
+  var divString = "";
+  for (var simindex=0; simindex<32; simindex++)
+  {
+    var row = '<div style="clear: both">'
+    for (var dieIndex=0; dieIndex<5; dieIndex++)
+    {
+      row = row+'<div class="smalldie';
+      if (simulations[simindex]['dice'][dieIndex]['hold'])
+      {
+        row = row + " held";
+      }
+
+      row = row+'">';
+      row = row+simulations[simindex]['dice'][dieIndex]['die'].toString();
+      row = row+'</div>';
+
+    }
+    row = row+'<div class="score">' + simulations[simindex]['score'].toString();
+      row = row+"  YZ:" + (Math.floor(1000*simulations[simindex]['tally']['yahtzee']/iterations)/10).toString()+"%";
+      row = row+"  LS:" + (Math.floor(1000*simulations[simindex]['tally']['largestraight']/iterations)/10).toString()+"%";
+      row = row+"  SS:" + (Math.floor(1000*simulations[simindex]['tally']['smallstraight']/iterations)/10).toString()+"%";
+      row = row+"  FH:" + (Math.floor(1000*simulations[simindex]['tally']['fullhouse']/iterations)/10).toString()+"%";
+      row = row+"  3oK:" + (Math.floor(1000*simulations[simindex]['tally']['threeok']/iterations)/10).toString()+"%";
+      row = row+"  4oK:" + (Math.floor(1000*simulations[simindex]['tally']['fourok']/iterations)/10).toString()+"%";
+      row = row+'</div>';
+
+    divString = divString + row;
+  }
+
+  document.getElementById("simulationresults").innerHTML = divString;
+}
+
+function simulateOneCase(ccc)
+{
+  // Make a copy of dice seed with "hold" flags set appropriately for this case
+  var thisDice = diceSeed.map(a => Object.assign({}, a));
+//  Object.assign({}, diceSeed);
+  for (var i=0; i<5; i++)
+  {
+    thisDice[i]['hold'] = (1<<i) & ccc ? true : false;
+  }
+
+  var thisTally = inittally();
+  for (var i=0; i<iterations; i++)
+  {
+    var dice = reroll(thisDice);
+    tallyRoll(thisTally, dice);
+  }
+
+  var thisSimulation = {
+    "case": ccc,
+    "dice": thisDice,
+    "tally": thisTally,
+    "score": thisTally["score"] / iterations
+  }
+
+  return thisSimulation;
+  /*
+  document.getElementById("stat-yahtzee").innerText = (tally["yahtzee"] * 100 / iterations).toString() + "%";
+  document.getElementById("stat-largestraight").innerText = (tally["largestraight"] * 100 / iterations).toString() + "%";
+  document.getElementById("stat-smallstraight").innerText = (tally["smallstraight"] * 100 / iterations).toString() + "%";
+  document.getElementById("stat-fullhouse").innerText = (tally["fullhouse"] * 100 / iterations).toString() + "%";
+  document.getElementById("stat-threeok").innerText = (tally["threeok"] * 100 / iterations).toString() + "%";
+  document.getElementById("stat-fourok").innerText = (tally["fourok"] * 100 / iterations).toString() + "%";
+  document.getElementById("stat-score").innerText = (tally["score"] / iterations).toString();
+
+
+
+  console.log("Yahtzee: " + tally["yahtzee"]);
+  console.log("Large Straight: " + tally["largestraight"]);
+  console.log("Small Straight: " + tally["smallstraight"]);
+  console.log("Full House: " + tally["fullhouse"]);
+  console.log("4 of a Kind: " + tally["fourok"]);
+  console.log("3 of a Kind: " + tally["threeok"]);
+  */
+}
+</script>
+
+
+<script type="text/paperscript" canvas="paper">
+
+
+
+</script>
+
+
+</body>
+</html>
